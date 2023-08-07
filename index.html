@@ -1,77 +1,55 @@
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-        <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="0">
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Plant Monitoring System</title>
-        <style>
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .center {
-            text-align: center;
-        }
-        .result {
-            margin-top: 20px;
-        }
-        body{background-image:url(Images/Plants.jpg);
-            background-size: cover;
-            background-position: center;
-        }
-        img {
-            width: 600px;
-            height: 400px;
-            background-color:none;
-            object-fit: none;
-        }
-        </style>
-        </head>
-        <body>
-            <h1 class="center">Plantly</h1>
-            <section>
-                <h2 class="center">Potato Disease Detection</h2>
-                <center>
-                    <img src="Images\potato-plant.jpeg" alt="Potato plant."> 
-                </center>
-            </section>
-            <div class="container">
-                <h3 class="center">Prediction</h3>
-                    <input type="file" id="image-input" accept="image/*" required>
-                    <button onclick="predict()">Predict</button>
-            </div>
-            <script>
-            function predict(){
-                //Get the uploaded image file
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+        <h1 class="center heading">Plant Disease Detection</h1>
+        </div>
+        <div>
+        <section>
+            <h2 class="center text1">Welcome! Monitor the health of your potato plant here</h2>
+        </section>
+            <h3 class="center text2">Upload the leaf image:</h3>
+            <center><input type="file" id="image-input" accept="image/*" required>
+                <button onclick="predict()">Predict</button></center>
+        </div>
+        <script>
+            function predict() {
+                // Clear previous results
+                sessionStorage.removeItem('prediction');
+
+                // Get the uploaded image file
                 var fileInput = document.getElementById('image-input');
                 var file = fileInput.files[0];
-    
+
                 // Create a FormData object to send the file
                 var formData = new FormData();
                 formData.append('image', file);
-    
+
                 // Send a POST request to the backend API
                 var xhr = new XMLHttpRequest();
                 xhr.open('POST', 'http://127.0.0.1:5000/api/predict', true);
-                xhr.onload = function() {
+                xhr.onload = function () {
                     console.log('Response status:', xhr.status);
                     console.log('Response:', xhr.responseText);
                     if (xhr.status === 200) {
                         var response = JSON.parse(xhr.responseText);
+                        console.log('Prediction response:', response);
                         sessionStorage.setItem('prediction', JSON.stringify(response));
-                        window.location.href = 'result.html';
-                    } else {
-                        alert('Error occurred while making the prediction.');
+                        window.location.href = 'result.html'
                     }
                 };
+
+                // Send the form data
                 xhr.send(formData);
             }
-    
         </script>
-        
-</body>
+    </body>
 </html>
