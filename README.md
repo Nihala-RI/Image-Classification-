@@ -1,4 +1,5 @@
-# Plant-disease-detection
+#Abstract
+
 
 Potatoes are a crucial staple crop worldwide, providing vital sustenance and economic benefits to countless communities.
 However, diseases like Early Blight and Late Blight pose a significant threat to potato cultivation, leading to yield losses and economic hardships for farmers. 
