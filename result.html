@@ -1,81 +1,102 @@
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-        <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="0">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Plant Monitoring System</title>
-        <style>
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .center {
-            text-align: center;
-        }
-        .result {
-            margin-top: 20px;
-        }
-        body{background-image:url(Images/Plants.jpg);
-            background-size: cover;
-            background-position: center;
-        }
-        img {
-            width: 600px;
-            height: 400px;
-            background-color:none;
-            object-fit: none;
-        }
-        </style>
-        </head>
-        <body>
-            <div class="container">
-                <h3 class="center">Prediction</h3>
-                <div id="prediction-result" class="result center"></div>
-                <div id="prediction-image" class="result center">
-                    <h3>Uploaded Image:</h3>
-                    <img id="uploaded-image" src="" alt="Uploaded Image">
-                </div>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+            <div id="prediction-result" class="center result1"></div>
+            <div id="prediction-image" class="center">
+                <img id="uploaded-image" src="" alt="Uploaded Image">
             </div>
-            <script>
+            <div id="suggestions" class="center">
+                <h3 id="suggestion-title">Remedial Measures:</h3>
+                <p id="suggestion-text"></p>
+              </div>
+        <script>
             function displayPrediction() {
                 var prediction = JSON.parse(sessionStorage.getItem('prediction'));
+                console.log('Stored prediction:', sessionStorage.getItem('prediction'));
                 console.log('Received response:', prediction);
+
+                if (!prediction) {
+                    // If there is no prediction, redirect back to the first page
+                    window.location.href = 'index.html';
+                    return;
+                }
 
                 // Print the prediction object to the console
                 console.log('Prediction object:', prediction);
 
                 var resultDiv = document.getElementById('prediction-result');
                 var imageDiv = document.getElementById('prediction-image');
-    
+                var suggestionText = document.getElementById('suggestion-text');
+
                 // Clear previous results
                 resultDiv.innerHTML = '';
                 imageDiv.innerHTML = '';
-    
-                // Display the predicted disease
-                var diseaseHeader = document.createElement('h3');
-                diseaseHeader.textContent = 'predicted disease:';
-                resultDiv.appendChild(diseaseHeader);
-    
+                suggestionText.innerHTML='';
+
+                // Display the heading "predicted disease"
+                //var diseaseHeader = document.createElement('h3');
+                //diseaseHeader.textContent = 'Predicted Disease:';
+                //resultDiv.appendChild(diseaseHeader);
+                //Display the prediction
                 var diseaseName = document.createElement('p');
-                diseaseName.textContent = prediction.disease;
+                var predictionKey= document.createElement('strong');
+                predictionKey.style.fontSize = 'larger';
+                predictionKey.style.color= '#B5D7A2';
+                predictionKey.textContent='Prediction: ';
+                predictionKey.style.fontWeight= 'bold';
+                if (prediction.class === 'Others') {
+                resultDiv.innerHTML = '<p class="upload-message">Please Upload the image of a Potato leaf</p>';
+                document.getElementById('suggestion-title').style.display = 'none';
+            }else{
+                diseaseName.appendChild(predictionKey);
+                diseaseName.innerHTML += prediction.class;
+                diseaseName.style.fontWeight='bold'
                 resultDiv.appendChild(diseaseName);
-    
+            }
+
+                // Set the color based on the prediction class
+               if (prediction.class === 'Potato___healthy') {
+                 diseaseName.style.color ='green';
+                 document.getElementById('suggestion-title').style.display = 'none';
+               } else {
+                diseaseName.style.color = '#a20d00';
+               }
+               displaySuggestions(prediction.class,suggestionText);
+
                 // Verify Base64 Image Data
                 var base64ImageData = prediction.image;
                 var image = new Image();
                 image.src = 'data:image/jpeg;base64,' + base64ImageData;
-                image.style.maxWidth = '300px';
-                image.style.marginTop = '20px';
+                image.style.width = '256px';
+                image.style.height = '256px';
+                image.style.objectFit = 'cover';
                 imageDiv.appendChild(image);
                 console.log('Image source:', image.src); // Log the image source
             }
+
+            function displaySuggestions(disease, suggestionText){
+                // Display suggestions based on the predicted disease
+                switch (disease){
+                case 'Potato___Late_blight':
+                    suggestionText.textContent = 'Apply copper-based fungicides. Remove and destroy infected plants.';
+                    break
+                case 'Potato___Early_blight':
+                    suggestionText.textContent = 'Apply fungicides containing chlorothalonil. Practice crop rotation.Prevent the plant from constant wetting';
+                    break
+                case 'Potato___healthy':
+                    suggestionText.textContent = 'Hurray!Your plant is healthy.';
+                    break
+            }
+          }
+
             // Call the displayPrediction() function when the page loads
-            window.onload = displayPrediction    
-            </script>
-        
-</body>
+            window.onload = displayPrediction;
+        </script>
+    </body>
 </html>
